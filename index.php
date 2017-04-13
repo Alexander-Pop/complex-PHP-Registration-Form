@@ -21,16 +21,16 @@ $imgb64 = $key->genImage();
 if(isset($_POST["submit"])) {
     // Insert user inputs into a single array to make things easier on the coder
     $formdata = array(
-        $_POST["username"],
-        $_POST["password"],
-        $_POST["confirmation"],
-        $_POST["securitycode"]
+        htmlspecialchars($_POST["username"]),
+        htmlspecialchars($_POST["password"]),
+        htmlspecialchars($_POST["confirmation"]),
+        htmlspecialchars($_POST["securitycode"])
     );
     
     // Check user inputs to ensure they are legitimate, secure, and can fit in the database
     if((strlen($formdata[0]) < 3) || (strlen($formdata[0]) > 40)) {
         echo 'Username not between 3 and 40 characters!';
-    } elseif(strlen($formdata[1]) < 9) {
+    } elseif(strlen($formdata[1]) < 8) {
         echo 'Password needs to be above 8 characters in length!';
     } elseif($formdata[1] !== $formdata[2]) {
         echo 'The verification password does not match the previously given password!';
@@ -49,7 +49,7 @@ if(isset($_POST["submit"])) {
         $query = "INSERT INTO accounts (username,passhash,email,session) VALUES (?,?,?,?)";
         
         // Send the query with appropriate data
-        $db->sendquery($db->connect(), $query, array($_POST["username"],$passhash,$_POST["email"],$sessiondata));
+        $db->sendquery($db->connect(), $query, array($formdata[0],$passhash,htmlspecialchars($_POST["email"]),$sessiondata));
         
         // Start a server-side session equal to the sessiondata that was added to the database
         $_SESSION['current'] = $sessiondata;
